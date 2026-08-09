@@ -34,7 +34,7 @@ func (r *UsersRepository) GetUserById(
 	if err != nil {
 		if errors.Is(err, core_postgres_pool.ErrNoRows) {
 			return domain.User{}, fmt.Errorf(
-				"user with id='%d' not found: %w",
+				"user with id='%d': %w",
 				id,
 				core_errors.ErrNotFound,
 			)
@@ -43,11 +43,6 @@ func (r *UsersRepository) GetUserById(
 		return domain.User{}, fmt.Errorf("scan error: %w", err)
 	}
 
-	userDomain := domain.NewUser(
-		userModel.ID,
-		userModel.Version,
-		userModel.FullName,
-		userModel.PhoneNumber,
-	)
+	userDomain := userDomainFromModel(userModel)
 	return userDomain, nil
 }

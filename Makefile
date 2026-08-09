@@ -39,7 +39,7 @@ migrate-down:
 	make migrate-action action=down
 
 todoapp-run:
-	@set LOGGER_FOLDER=${PROJECT_ROOT}/out/logs&& \
-	set POSTGRES_HOST=localhost&& \
+	@export LOGGER_FOLDER=${PROJECT_ROOT}/out/logs&& \
+	export POSTGRES_HOST=localhost&& \
 	go mod tidy && \
 	go run cmd/todoapp/main.go

@@ -3,7 +3,8 @@ package tasks_transport_http
 import (
 	"net/http"
 
-	core_logger "github.com/NikitaKissa/golang-todo-app/internal/core/logger"
+	"github.com/NikitaKissa/golang-todo-app/internal/core/domain"
+	core_http_request "github.com/NikitaKissa/golang-todo-app/internal/core/transport/http/request"
 )
 
 type CreateTaskRequest struct {
@@ -12,8 +13,36 @@ type CreateTaskRequest struct {
 	AuthorUserID int     `json:"author_user_id" validate:"required"`
 }
 
+type CreateTaskResponse TaskDTOResponse
+
 func (h *TasksHttpHandler) CreateTask(rw http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-	log := core_logger.FromContext(ctx)
+	ctx, responseHandler := core_http_request.NewContext(rw, r)
+
+	var request CreateTaskRequest
+	if err := core_http_request.DecodeAndValidateRequest(r, &request); err != nil {
+		responseHandler.ErrorResponse(
+			err,
+			"failed to decode and validate http request",
+		)
+		return
+	}
+
+	taskDomain := domain.NewTaskUninitialized(
+		request.Title,
+		request.Description,
+		request.AuthorUserID,
+	)
+
+	taskDomain, err := h.tasksService.CreateTask(ctx, taskDomain)
+	if err != nil {
+		responseHandler.ErrorResponse(
+			err,
+			"failed to create task",
+		)
+		return
+	}
+
+	response := CreateTaskResponse(taskDTOFromDomain(taskDomain))
+	responseHandler.JSONResponse(response, http.StatusCreated)
 
 }

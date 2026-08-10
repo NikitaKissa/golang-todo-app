@@ -4,9 +4,7 @@ import (
 	"net/http"
 
 	"github.com/NikitaKissa/golang-todo-app/internal/core/domain"
-	core_logger "github.com/NikitaKissa/golang-todo-app/internal/core/logger"
 	core_http_request "github.com/NikitaKissa/golang-todo-app/internal/core/transport/http/request"
-	core_http_response "github.com/NikitaKissa/golang-todo-app/internal/core/transport/http/response"
 )
 
 type CreateUserRequest struct {
@@ -17,9 +15,7 @@ type CreateUserRequest struct {
 type CreateUserResponse UserDTOResponse
 
 func (h *UsersHttpHandler) CreateUser(rw http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-	log := core_logger.FromContext(ctx)
-	responseHandler := core_http_response.NewHttpResponseHandler(log, rw)
+	ctx, responseHandler := core_http_request.NewContext(rw, r)
 
 	var request CreateUserRequest
 	if err := core_http_request.DecodeAndValidateRequest(r, &request); err != nil {

@@ -6,9 +6,7 @@ import (
 	"strings"
 
 	"github.com/NikitaKissa/golang-todo-app/internal/core/domain"
-	core_logger "github.com/NikitaKissa/golang-todo-app/internal/core/logger"
 	core_http_request "github.com/NikitaKissa/golang-todo-app/internal/core/transport/http/request"
-	core_http_response "github.com/NikitaKissa/golang-todo-app/internal/core/transport/http/response"
 	core_http_types "github.com/NikitaKissa/golang-todo-app/internal/core/transport/http/types"
 )
 
@@ -48,9 +46,7 @@ func (r *PatchUserRequest) Validate() error {
 type PatchUserResponse UserDTOResponse
 
 func (h *UsersHttpHandler) PatchUser(rw http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-	log := core_logger.FromContext(ctx)
-	responseHandler := core_http_response.NewHttpResponseHandler(log, rw)
+	ctx, responseHandler := core_http_request.NewContext(rw, r)
 
 	userId, err := core_http_request.GetIntPathValue(r, "id")
 	if err != nil {

@@ -38,6 +38,9 @@ migrate-up:
 migrate-down:
 	make migrate-action action=down
 
+logs-cleanup:
+	rm -rf ${PROJECT_ROOT}/out/logs
+
 todoapp-run:
 	@export LOGGER_FOLDER=${PROJECT_ROOT}/out/logs&& \
 	export POSTGRES_HOST=localhost&& \

@@ -44,7 +44,8 @@ func NewLogger(config Config) (*Logger, error) {
 		return nil, fmt.Errorf("create folder for log level: %w", err)
 	}
 
-	timestamp := time.Now().UTC().Format("2006-01-02T15-04-05.000000")
+	const timestampFormat = "2006-01-02T15:04:05.000000"
+	timestamp := time.Now().UTC().Format(timestampFormat)
 	logFilePath := fmt.Sprintf("%s/%s.log", config.Folder, timestamp)
 
 	logFile, err := os.OpenFile(logFilePath, os.O_CREATE|os.O_WRONLY, 0644)
@@ -53,7 +54,7 @@ func NewLogger(config Config) (*Logger, error) {
 	}
 
 	zapConfig := zap.NewDevelopmentEncoderConfig()
-	zapConfig.EncodeTime = zapcore.TimeEncoderOfLayout(timestamp)
+	zapConfig.EncodeTime = zapcore.TimeEncoderOfLayout(timestampFormat)
 
 	zapEncoder := zapcore.NewConsoleEncoder(zapConfig)
 

@@ -43,17 +43,17 @@ func getUserIdLimitOffsetQueryParams(r *http.Request) (*int, *int, *int, error) 
 
 	userId, err := core_http_request.GetIntQueryParams(r, userIdKey)
 	if err != nil {
-		return nil, nil, nil, fmt.Errorf("get 'user_id' query param", err)
+		return nil, nil, nil, fmt.Errorf("get 'user_id' query param: %w", err)
 	}
 
 	limit, err := core_http_request.GetIntQueryParams(r, limitParamKey)
 	if err != nil {
-		return nil, nil, nil, fmt.Errorf("get 'limit' query param", err)
+		return nil, nil, nil, fmt.Errorf("get 'limit' query param: %w", err)
 	}
 
 	offset, err := core_http_request.GetIntQueryParams(r, offsetParamKey)
 	if err != nil {
-		return nil, nil, nil, fmt.Errorf("get 'offset' query param", err)
+		return nil, nil, nil, fmt.Errorf("get 'offset' query param: %w", err)
 	}
 
 	return userId, limit, offset, nil

@@ -1,0 +1,269 @@
+basePath: /api/v1
+definitions:
+  github_com_NikitaKissa_golang-todo-app_internal_core_transport_http_response.ErrorResponse:
+    properties:
+      error:
+        example: 'system error message: error type'
+        type: string
+      message:
+        example: human readable message
+        type: string
+    type: object
+  internal_features_users_transport_http.CreateUserRequest:
+    properties:
+      full_name:
+        example: Jack Daniels
+        maxLength: 100
+        minLength: 3
+        type: string
+      phone_number:
+        example: "+48123123123"
+        maxLength: 15
+        minLength: 10
+        type: string
+    required:
+    - full_name
+    type: object
+  internal_features_users_transport_http.CreateUserResponse:
+    properties:
+      full_name:
+        example: Jack Daniels
+        type: string
+      id:
+        example: 11
+        type: integer
+      phone_number:
+        example: "+48123123123"
+        type: string
+      version:
+        example: 1
+        type: integer
+    type: object
+  internal_features_users_transport_http.GetUserResponse:
+    properties:
+      full_name:
+        example: Jack Daniels
+        type: string
+      id:
+        example: 11
+        type: integer
+      phone_number:
+        example: "+48123123123"
+        type: string
+      version:
+        example: 1
+        type: integer
+    type: object
+  internal_features_users_transport_http.PatchUserRequest:
+    properties:
+      full_name:
+        example: Jack Yard
+        type: string
+      phone_number:
+        example: "+48123123456"
+        type: string
+    type: object
+  internal_features_users_transport_http.PatchUserResponse:
+    properties:
+      full_name:
+        example: Jack Daniels
+        type: string
+      id:
+        example: 11
+        type: integer
+      phone_number:
+        example: "+48123123123"
+        type: string
+      version:
+        example: 1
+        type: integer
+    type: object
+  internal_features_users_transport_http.UserDTOResponse:
+    properties:
+      full_name:
+        example: Jack Daniels
+        type: string
+      id:
+        example: 11
+        type: integer
+      phone_number:
+        example: "+48123123123"
+        type: string
+      version:
+        example: 1
+        type: integer
+    type: object
+host: 127.0.0.1:8080
+info:
+  contact: {}
+  description: Todo app REST-API scheme
+  title: Golang Todo API
+  version: "1.0"
+paths:
+  /users:
+    get:
+      description: Get users with pagination
+      parameters:
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      - description: Offset
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully got user
+          schema:
+            items:
+              $ref: '#/definitions/internal_features_users_transport_http.UserDTOResponse'
+            type: array
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/github_com_NikitaKissa_golang-todo-app_internal_core_transport_http_response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_NikitaKissa_golang-todo-app_internal_core_transport_http_response.ErrorResponse'
+      summary: Get users
+      tags:
+      - users
+    post:
+      consumes:
+      - application/json
+      description: Create new user in system
+      parameters:
+      - description: CreateUserRequest request body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_features_users_transport_http.CreateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Successfully created user
+          schema:
+            $ref: '#/definitions/internal_features_users_transport_http.CreateUserResponse'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/github_com_NikitaKissa_golang-todo-app_internal_core_transport_http_response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_NikitaKissa_golang-todo-app_internal_core_transport_http_response.ErrorResponse'
+      summary: Create user
+      tags:
+      - users
+  /users/{user_id}:
+    delete:
+      description: Delete user in system
+      parameters:
+      - description: User id
+        in: path
+        name: user_id
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: Successfully deleted user
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/github_com_NikitaKissa_golang-todo-app_internal_core_transport_http_response.ErrorResponse'
+        "404":
+          description: User not found
+          schema:
+            $ref: '#/definitions/github_com_NikitaKissa_golang-todo-app_internal_core_transport_http_response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_NikitaKissa_golang-todo-app_internal_core_transport_http_response.ErrorResponse'
+      summary: Delete user
+      tags:
+      - users
+    get:
+      description: Get user by id
+      parameters:
+      - description: User id
+        in: path
+        name: user_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully got user
+          schema:
+            $ref: '#/definitions/internal_features_users_transport_http.GetUserResponse'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/github_com_NikitaKissa_golang-todo-app_internal_core_transport_http_response.ErrorResponse'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/github_com_NikitaKissa_golang-todo-app_internal_core_transport_http_response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_NikitaKissa_golang-todo-app_internal_core_transport_http_response.ErrorResponse'
+      summary: Get user
+      tags:
+      - users
+    patch:
+      consumes:
+      - application/json
+      description: |-
+        Patch user in system
+        ### Three-state logic of fields updating
+        1. **Field is unsigned**: `phone_number` is ignored
+        2. **Field is provided**: `phone_number` is updated
+        3. **Field is null**: `phone_number` is deleted
+        **Invalid state:** `full_name` set to null
+      parameters:
+      - description: User id
+        in: path
+        name: user_id
+        required: true
+        type: integer
+      - description: CreateUserRequest request body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_features_users_transport_http.PatchUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully created user
+          schema:
+            $ref: '#/definitions/internal_features_users_transport_http.PatchUserResponse'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/github_com_NikitaKissa_golang-todo-app_internal_core_transport_http_response.ErrorResponse'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/github_com_NikitaKissa_golang-todo-app_internal_core_transport_http_response.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/github_com_NikitaKissa_golang-todo-app_internal_core_transport_http_response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_NikitaKissa_golang-todo-app_internal_core_transport_http_response.ErrorResponse'
+      summary: Patch user
+      tags:
+      - users
+swagger: "2.0"

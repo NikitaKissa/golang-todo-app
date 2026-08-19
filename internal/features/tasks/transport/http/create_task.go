@@ -5,6 +5,7 @@ import (
 
 	"github.com/NikitaKissa/golang-todo-app/internal/core/domain"
 	core_http_request "github.com/NikitaKissa/golang-todo-app/internal/core/transport/http/request"
+	_ "github.com/NikitaKissa/golang-todo-app/internal/core/transport/http/response"
 )
 
 type CreateTaskRequest struct {
@@ -15,6 +16,18 @@ type CreateTaskRequest struct {
 
 type CreateTaskResponse TaskDTOResponse
 
+// CreateTask 	godoc
+// @Summary 	Create task
+// @Description Create new task in system
+// @Tags 		tasks
+// @Accept 		json
+// @Produce 	json
+// @Param 		request body CreateTaskRequest true "CreateTaskRequest request body"
+// @Success 	201 {object} CreateTaskResponse "Successfully created task"
+// @Failure 	400 {object} core_http_response.ErrorResponse "Bad request"
+// @Failure 	404 {object} core_http_response.ErrorResponse "Author user not found"
+// @Failure 	500 {object} core_http_response.ErrorResponse "Internal server error"
+// @Router 		/tasks [post]
 func (h *TasksHttpHandler) CreateTask(rw http.ResponseWriter, r *http.Request) {
 	ctx, responseHandler := core_http_request.NewContext(rw, r)
 

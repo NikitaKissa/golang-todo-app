@@ -46,7 +46,7 @@ func (r *PatchUserRequest) Validate() error {
 
 type PatchUserResponse UserDTOResponse
 
-// CreateUser 	godoc
+// PatchUser 	godoc
 // @Summary 	Patch user
 // @Description Patch user in system
 // @Description ### Three-state logic of fields updating
@@ -58,7 +58,7 @@ type PatchUserResponse UserDTOResponse
 // @Accept 		json
 // @Produce 	json
 // @Param 		user_id path int true "User id"
-// @Param 		request body PatchUserRequest true "CreateUserRequest request body"
+// @Param 		request body PatchUserRequest true "PatchUserRequest request body"
 // @Success 	200 {object} PatchUserResponse "Successfully created user"
 // @Failure 	400 {object} core_http_response.ErrorResponse "Bad request"
 // @Failure 	404 {object} core_http_response.ErrorResponse "Not found"

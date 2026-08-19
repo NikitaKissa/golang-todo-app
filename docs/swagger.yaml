@@ -9,6 +9,157 @@ definitions:
         example: human readable message
         type: string
     type: object
+  internal_features_statistics_transport_http.GetStatisticsResponse:
+    properties:
+      tasks_average_completion_time:
+        example: 15m34s
+        type: string
+      tasks_completed:
+        example: 29
+        type: integer
+      tasks_completed_rate:
+        example: 85.2941
+        type: number
+      tasks_created:
+        example: 34
+        type: integer
+    type: object
+  internal_features_tasks_transport_http.CreateTaskRequest:
+    properties:
+      author_user_id:
+        type: integer
+      description:
+        maxLength: 1000
+        minLength: 1
+        type: string
+      title:
+        maxLength: 100
+        minLength: 1
+        type: string
+    required:
+    - author_user_id
+    - title
+    type: object
+  internal_features_tasks_transport_http.CreateTaskResponse:
+    properties:
+      author_user_id:
+        example: 123
+        type: integer
+      completed:
+        example: false
+        type: boolean
+      completed_at:
+        example: "2026-08-16T09:59:20.778079Z"
+        type: string
+      created_at:
+        example: "2026-08-06T21:56:12.633263Z"
+        type: string
+      description:
+        example: Exercise 15 p. 12
+        type: string
+      id:
+        example: 1
+        type: integer
+      title:
+        example: Make homework
+        type: string
+      version:
+        example: 1
+        type: integer
+    type: object
+  internal_features_tasks_transport_http.GetTaskResponse:
+    properties:
+      author_user_id:
+        example: 123
+        type: integer
+      completed:
+        example: false
+        type: boolean
+      completed_at:
+        example: "2026-08-16T09:59:20.778079Z"
+        type: string
+      created_at:
+        example: "2026-08-06T21:56:12.633263Z"
+        type: string
+      description:
+        example: Exercise 15 p. 12
+        type: string
+      id:
+        example: 1
+        type: integer
+      title:
+        example: Make homework
+        type: string
+      version:
+        example: 1
+        type: integer
+    type: object
+  internal_features_tasks_transport_http.PatchTaskRequest:
+    properties:
+      completed:
+        example: true
+        type: boolean
+      description:
+        example: With wildberries
+        type: string
+      title:
+        example: Bake a cake
+        type: string
+    type: object
+  internal_features_tasks_transport_http.PatchTaskResponse:
+    properties:
+      author_user_id:
+        example: 123
+        type: integer
+      completed:
+        example: false
+        type: boolean
+      completed_at:
+        example: "2026-08-16T09:59:20.778079Z"
+        type: string
+      created_at:
+        example: "2026-08-06T21:56:12.633263Z"
+        type: string
+      description:
+        example: Exercise 15 p. 12
+        type: string
+      id:
+        example: 1
+        type: integer
+      title:
+        example: Make homework
+        type: string
+      version:
+        example: 1
+        type: integer
+    type: object
+  internal_features_tasks_transport_http.TaskDTOResponse:
+    properties:
+      author_user_id:
+        example: 123
+        type: integer
+      completed:
+        example: false
+        type: boolean
+      completed_at:
+        example: "2026-08-16T09:59:20.778079Z"
+        type: string
+      created_at:
+        example: "2026-08-06T21:56:12.633263Z"
+        type: string
+      description:
+        example: Exercise 15 p. 12
+        type: string
+      id:
+        example: 1
+        type: integer
+      title:
+        example: Make homework
+        type: string
+      version:
+        example: 1
+        type: integer
+    type: object
   internal_features_users_transport_http.CreateUserRequest:
     properties:
       full_name:
@@ -100,6 +251,211 @@ info:
   title: Golang Todo API
   version: "1.0"
 paths:
+  /statistics:
+    get:
+      description: Get statistics about tasks
+      parameters:
+      - description: User Id
+        in: query
+        name: user_id
+        type: integer
+      - description: From [YYYY-MM-DD]
+        in: query
+        name: from
+        type: string
+      - description: To [YYYY-MM-DD]
+        in: query
+        name: to
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully got statistics
+          schema:
+            $ref: '#/definitions/internal_features_statistics_transport_http.GetStatisticsResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_NikitaKissa_golang-todo-app_internal_core_transport_http_response.ErrorResponse'
+      summary: Get statistics
+      tags:
+      - statistics
+  /task/{task_id}:
+    patch:
+      consumes:
+      - application/json
+      description: |-
+        Patch task in system
+        ### Three-state logic of fields updating
+        1. **Field is unsigned**: `description` is ignored
+        2. **Field is provided**: `description` is updated
+        3. **Field is null**: `description` is deleted
+        **Invalid state:** `completed`/`title` set to null
+      parameters:
+      - description: Task id
+        in: path
+        name: task_id
+        required: true
+        type: integer
+      - description: PatchTaskRequest request body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_features_tasks_transport_http.PatchTaskRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully patched task
+          schema:
+            $ref: '#/definitions/internal_features_tasks_transport_http.PatchTaskResponse'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/github_com_NikitaKissa_golang-todo-app_internal_core_transport_http_response.ErrorResponse'
+        "404":
+          description: Task not found
+          schema:
+            $ref: '#/definitions/github_com_NikitaKissa_golang-todo-app_internal_core_transport_http_response.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/github_com_NikitaKissa_golang-todo-app_internal_core_transport_http_response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_NikitaKissa_golang-todo-app_internal_core_transport_http_response.ErrorResponse'
+      summary: Patch task
+      tags:
+      - tasks
+  /tasks:
+    get:
+      description: Get tasks with pagination
+      parameters:
+      - description: User Id
+        in: query
+        name: user_id
+        type: integer
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      - description: Offset
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully got user
+          schema:
+            items:
+              $ref: '#/definitions/internal_features_tasks_transport_http.TaskDTOResponse'
+            type: array
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/github_com_NikitaKissa_golang-todo-app_internal_core_transport_http_response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_NikitaKissa_golang-todo-app_internal_core_transport_http_response.ErrorResponse'
+      summary: Get tasks
+      tags:
+      - tasks
+    post:
+      consumes:
+      - application/json
+      description: Create new task in system
+      parameters:
+      - description: CreateTaskRequest request body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_features_tasks_transport_http.CreateTaskRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Successfully created task
+          schema:
+            $ref: '#/definitions/internal_features_tasks_transport_http.CreateTaskResponse'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/github_com_NikitaKissa_golang-todo-app_internal_core_transport_http_response.ErrorResponse'
+        "404":
+          description: Author user not found
+          schema:
+            $ref: '#/definitions/github_com_NikitaKissa_golang-todo-app_internal_core_transport_http_response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_NikitaKissa_golang-todo-app_internal_core_transport_http_response.ErrorResponse'
+      summary: Create task
+      tags:
+      - tasks
+  /tasks/{task_id}:
+    delete:
+      description: Delete task in system
+      parameters:
+      - description: Task id
+        in: path
+        name: task_id
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: Successfully deleted task
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/github_com_NikitaKissa_golang-todo-app_internal_core_transport_http_response.ErrorResponse'
+        "404":
+          description: Task not found
+          schema:
+            $ref: '#/definitions/github_com_NikitaKissa_golang-todo-app_internal_core_transport_http_response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_NikitaKissa_golang-todo-app_internal_core_transport_http_response.ErrorResponse'
+      summary: Delete task
+      tags:
+      - tasks
+    get:
+      description: Get task by id
+      parameters:
+      - description: Task id
+        in: path
+        name: task_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully got task
+          schema:
+            $ref: '#/definitions/internal_features_tasks_transport_http.GetTaskResponse'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/github_com_NikitaKissa_golang-todo-app_internal_core_transport_http_response.ErrorResponse'
+        "404":
+          description: Task not found
+          schema:
+            $ref: '#/definitions/github_com_NikitaKissa_golang-todo-app_internal_core_transport_http_response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_NikitaKissa_golang-todo-app_internal_core_transport_http_response.ErrorResponse'
+      summary: Get task
+      tags:
+      - tasks
   /users:
     get:
       description: Get users with pagination
@@ -234,7 +590,7 @@ paths:
         name: user_id
         required: true
         type: integer
-      - description: CreateUserRequest request body
+      - description: PatchUserRequest request body
         in: body
         name: request
         required: true

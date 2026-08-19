@@ -63,6 +63,3 @@ swagger-gen:
 
 ps:
 	@docker compose ps 
-
-swagger-sh:
-	docker compose run --rm --entrypoint /bin/sh swagger

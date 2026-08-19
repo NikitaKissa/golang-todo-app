@@ -6,13 +6,14 @@ import (
 
 	"github.com/NikitaKissa/golang-todo-app/internal/core/domain"
 	core_http_request "github.com/NikitaKissa/golang-todo-app/internal/core/transport/http/request"
+	_ "github.com/NikitaKissa/golang-todo-app/internal/core/transport/http/response"
 	core_http_types "github.com/NikitaKissa/golang-todo-app/internal/core/transport/http/types"
 )
 
 type PatchTaskRequest struct {
-	Title       core_http_types.Nullable[string] `json:"title"`
-	Description core_http_types.Nullable[string] `json:"description"`
-	Completed   core_http_types.Nullable[bool]   `json:"completed"`
+	Title       core_http_types.Nullable[string] `json:"title"       swaggertype:"string" example:"Bake a cake"`
+	Description core_http_types.Nullable[string] `json:"description" swaggertype:"string" example:"With wildberries"`
+	Completed   core_http_types.Nullable[bool]   `json:"completed"   swaggertype:"boolean" example:"true"`
 }
 
 func (r *PatchTaskRequest) Validate() error {
@@ -43,6 +44,25 @@ func (r *PatchTaskRequest) Validate() error {
 
 type PatchTaskResponse TaskDTOResponse
 
+// PatchTask 	godoc
+// @Summary 	Patch task
+// @Description Patch task in system
+// @Description ### Three-state logic of fields updating
+// @Description 1. **Field is unsigned**: `description` is ignored
+// @Description 2. **Field is provided**: `description` is updated
+// @Description 3. **Field is null**: `description` is deleted
+// @Description **Invalid state:** `completed`/`title` set to null
+// @Tags 		tasks
+// @Accept 		json
+// @Produce 	json
+// @Param 		task_id path int true "Task id"
+// @Param 		request body PatchTaskRequest true "PatchTaskRequest request body"
+// @Success 	200 {object} PatchTaskResponse "Successfully patched task"
+// @Failure 	400 {object} core_http_response.ErrorResponse "Bad request"
+// @Failure 	404 {object} core_http_response.ErrorResponse "Task not found"
+// @Failure 	409 {object} core_http_response.ErrorResponse "Conflict"
+// @Failure 	500 {object} core_http_response.ErrorResponse "Internal server error"
+// @Router 		/task/{task_id} [patch]
 func (h *TasksHttpHandler) PatchTask(rw http.ResponseWriter, r *http.Request) {
 	ctx, responseHandler := core_http_request.NewContext(rw, r)
 

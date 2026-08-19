@@ -38,9 +38,9 @@ func (h *HttpResponseHandler) DeleteResponse() {
 func (h *HttpResponseHandler) errorResponse(statusCode int, err error, msg string) {
 	h.rw.WriteHeader(statusCode)
 
-	response := map[string]string{
-		"error":   err.Error(),
-		"message": msg,
+	response := ErrorResponse{
+		Error:   err.Error(),
+		Message: msg,
 	}
 
 	h.JSONResponse(response, statusCode)
